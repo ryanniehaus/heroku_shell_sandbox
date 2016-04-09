@@ -7,6 +7,6 @@ do
   echo DIR "$each"
   ls -la "$each"
 done
-echo DIR CACHE_DIR
-ls -la CACHE_DIR
+echo DIR CACHE_DIR/
+ls -la CACHE_DIR/
 
