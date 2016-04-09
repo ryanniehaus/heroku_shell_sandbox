@@ -8,10 +8,3 @@ do
   ls -la "$each"
 done
 
-if [ -f new_file.txt ]
-then
-  echo FILE ALREADY EXISTS
-else
-  > new_file.txt
-fi
-
