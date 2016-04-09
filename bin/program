@@ -7,6 +7,6 @@ do
   echo DIR "$each"
   ls -la "$each"
 done
-echo DIR /tmp
-ls -la /tmp
+echo DIR "$TEMP_APP_DIR"
+ls -la "$TEMP_APP_DIR"
 
