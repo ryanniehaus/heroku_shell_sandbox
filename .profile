@@ -1,3 +1,7 @@
 #!/usr/bin/env bash
 
-# Extra program configuration may go here
+echo "-----> Executing .profile"
+#Extra program configuration may go here
+export myTESTDIR_INBUILDPACK_DEFAULTS=BLAH
+echo "-----> FINISHED Executing .profile"
+
