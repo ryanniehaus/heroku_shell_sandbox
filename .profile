@@ -2,6 +2,6 @@
 
 echo "-----> Executing .profile"
 #Extra program configuration may go here
-export myTESTDIR_INBUILDPACK_DEFAULTS=BLAH
+export myAPPDIR_DEFAULTS=BLAH
 echo "-----> FINISHED Executing .profile"
 
