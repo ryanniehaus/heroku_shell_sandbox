@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# bin/detect <build-dir>
+# bin/detect BUILD_DIR
 
-echo "Null"
+echo "ryryCustom bin/detect BUILD_DIR=$1"
 exit 0
