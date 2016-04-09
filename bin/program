@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
 echo hello world
 export
-
+ls -la
