@@ -1,4 +1,9 @@
 #!/usr/bin/env bash
 echo hello world
 export
-ls -la
+echo in dir `pwd`
+for each in $(find . -type d)
+do
+  echo DIR "$each"
+  ls -la "$each"
+done
