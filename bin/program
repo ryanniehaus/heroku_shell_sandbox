@@ -10,3 +10,12 @@ done
 echo DIR "$TEMP_APP_DIR"
 ls -la "$TEMP_APP_DIR"
 
+if [ ! -f "$TEMP_APP_DIR/testfile" ]
+then
+  lineCount=0
+else
+  lineCount=$(cat "$TEMP_APP_DIR/testfile")
+fi
+echo $((1+$lineCount)) > "$TEMP_APP_DIR/testfile"
+cat "$TEMP_APP_DIR/testfile"
+
