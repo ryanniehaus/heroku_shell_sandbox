@@ -2,7 +2,7 @@
 echo hello world
 export
 echo in dir `pwd`
-for each in $(find . -type d)
+for each in $(find . -type d | grep -vE "/.git$")
 do
   echo DIR "$each"
   ls -la "$each"
