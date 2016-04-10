@@ -13,9 +13,11 @@ pushd "$TEMP_APP_DIR" > /dev/null
 
 echo downloading $(dataURLFromCloudinary.py openSourceTracker.csv)
 wget $(dataURLFromCloudinary.py openSourceTracker.csv) &> /dev/null
+sleep 5
 ls -la
 if [ ! -f openSourceTracker.csv ]
 then
+  echo "openSourceTracker.csv Not here, creating... "
   echo "projectName,branchesURL" > openSourceTracker.csv
 fi
 tail -n+2 openSourceTracker.csv > openSourceTrackerWithoutHeader.csv
