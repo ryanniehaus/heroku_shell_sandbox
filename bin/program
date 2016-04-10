@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-echo hello world
 export
 echo in dir `pwd`
 for each in $(find . -type d | grep -vE "/.git$" | grep -vE "/.git/" | grep -vE "/.heroku$" | grep -vE "/.heroku/")
@@ -12,6 +11,7 @@ ls -la "$TEMP_APP_DIR"
 
 pushd "$TEMP_APP_DIR"
 
+echo downloading $(dataURLFromCloudinary.py openSourceTracker.csv)
 wget $(dataURLFromCloudinary.py openSourceTracker.csv)
 
 if [ ! -f openSourceTracker.csv ]
@@ -19,6 +19,7 @@ then
   echo "projectName,URL" > openSourceTracker.csv
 fi
 
+echo uploading $(dataURLFromCloudinary.py openSourceTracker.csv)
 uploadDataToCloudinary.py openSourceTracker.csv openSourceTracker.csv
 
 popd
