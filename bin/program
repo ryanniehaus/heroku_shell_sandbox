@@ -9,7 +9,7 @@ done
 echo DIR "$TEMP_APP_DIR"
 ls -la "$TEMP_APP_DIR"
 
-pushd "$TEMP_APP_DIR"
+pushd "$TEMP_APP_DIR" > /dev/null
 
 echo downloading $(dataURLFromCloudinary.py openSourceTracker.csv)
 wget $(dataURLFromCloudinary.py openSourceTracker.csv) &> /dev/null
@@ -47,6 +47,6 @@ rm -f openSourceTrackerWithoutHeader.csv
 echo uploading $(dataURLFromCloudinary.py openSourceTracker.csv)
 uploadDataToCloudinary.py openSourceTracker.csv openSourceTracker.csv
 
-popd
+popd > /dev/null
 
 
