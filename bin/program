@@ -13,7 +13,7 @@ pushd "$TEMP_APP_DIR" > /dev/null
 
 echo downloading $(dataURLFromCloudinary.py openSourceTracker.csv)
 wget $(dataURLFromCloudinary.py openSourceTracker.csv) &> /dev/null
-
+ls -la
 if [ ! -f openSourceTracker.csv ]
 then
   echo "projectName,branchesURL" > openSourceTracker.csv
