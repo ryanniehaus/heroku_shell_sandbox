@@ -20,6 +20,7 @@ then
   echo "openSourceTracker.csv Not here, creating... "
   echo "projectName,branchesURL" > openSourceTracker.csv
 fi
+dos2unix openSourceTracker.csv
 tail -n+2 openSourceTracker.csv > openSourceTrackerWithoutHeader.csv
 while IFS= read tempLine
 do
@@ -48,6 +49,7 @@ rm -f openSourceTrackerWithoutHeader.csv
 
 echo openSourceTracker.csv contents
 cat openSourceTracker.csv
+unix2dos
 echo uploading $(dataURLFromCloudinary.py openSourceTracker.csv)
 uploadDataToCloudinary.py openSourceTracker.csv openSourceTracker.csv
 
