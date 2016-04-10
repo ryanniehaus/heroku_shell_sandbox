@@ -12,12 +12,37 @@ ls -la "$TEMP_APP_DIR"
 pushd "$TEMP_APP_DIR"
 
 echo downloading $(dataURLFromCloudinary.py openSourceTracker.csv)
-wget $(dataURLFromCloudinary.py openSourceTracker.csv)
+wget $(dataURLFromCloudinary.py openSourceTracker.csv) &> /dev/null
 
 if [ ! -f openSourceTracker.csv ]
 then
-  echo "projectName,URL" > openSourceTracker.csv
+  echo "projectName,branchesURL" > openSourceTracker.csv
 fi
+tail -n+2 openSourceTracker.csv > openSourceTrackerWithoutHeader.csv
+while IFS= read tempLine
+do
+  projectName=$(echo "$tempLine" | cut -f 1 -d ",")
+  branchesURL=$(echo "$tempLine" | cut -f 2 -d "," | sed 's|[/]\+$||')
+  wget "$branchesURL" -O "$projectName.html" &> /dev/null
+  dos2unix "$projectName.html" &> /dev/null
+  sed -n 's/.*href="\([^"]*\).*/\1/p' "$projectName.html" \
+  	| sed 's|^'"$branchesURL"'[/]*||;s|[/]\+$||' \
+  	| grep -E "^$projectName-[0-9]+[.][0-9]+[.][0-9a-z]+[.]tar[.]gz$" > "$projectName.ARCHIVES.txt"
+  sed -n 's/.*href="\([^"]*\).*/\1/p' "$projectName.html" | sed 's|^'"$branchesURL"'[/]*||;s|[/]\+$||' | grep -E "^[0-9]+[.][0-9]+[.][0-9a-z]+" > "$projectName.SUBDIRS.txt"
+  while IFS= read tempSubdir
+  do
+    wget "$branchesURL"/"$tempSubdir" -O "$projectName.html" &> /dev/null
+    dos2unix "$projectName.html" &> /dev/null
+    sed -n 's/.*href="\([^"]*\).*/\1/p' "$projectName.html" \
+      | sed 's|^'"$branchesURL/$tempSubdir"'[/]*||;s|[/]\+$||' \
+      | grep -E "^$projectName-[0-9]+[.][0-9]+[.][0-9a-z]+[.]tar[.]gz$" \
+      | sed 's|^\(.\+\)$|'"$tempSubdir"'/\1|' >> "$projectName.ARCHIVES.txt"
+  done < "$projectName.SUBDIRS.txt"
+  rm -f "$projectName.SUBDIRS.txt"
+  rm -f "$projectName.html"
+  cat "$projectName.ARCHIVES.txt"
+done < openSourceTrackerWithoutHeader.csv
+rm -f openSourceTrackerWithoutHeader.csv
 
 echo uploading $(dataURLFromCloudinary.py openSourceTracker.csv)
 uploadDataToCloudinary.py openSourceTracker.csv openSourceTracker.csv
