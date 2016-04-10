@@ -22,7 +22,7 @@ then
   echo "projectName,branchesURL" > openSourceTracker.csv
 fi
 
-dos2unix openSourceTracker.csv > /dev/null
+dos2unix openSourceTracker.csv &> /dev/null
 
 tail -n+2 openSourceTracker.csv > openSourceTrackerWithoutHeader.csv
 while IFS= read tempLine
@@ -30,7 +30,7 @@ do
   projectName=$(echo "$tempLine" | cut -f 1 -d ",")
   branchesURL=$(echo "$tempLine" | cut -f 2 -d "," | sed 's|[/]\+$||')
   wget "$branchesURL" -O "$projectName.html" &> /dev/null
-  dos2unix "$projectName.html" > /dev/null
+  dos2unix "$projectName.html" &> /dev/null
   sed -n 's/.*href="\([^"]*\).*/\1/p' "$projectName.html" \
   	| sed 's|^'"$branchesURL"'[/]*||;s|[/]\+$||' \
   	| grep -E "^$projectName-[0-9]+[.][0-9]+[.][0-9a-z]+[.]tar[.]gz$" > "$projectName.ARCHIVES.txt"
@@ -38,7 +38,7 @@ do
   while IFS= read tempSubdir
   do
     wget "$branchesURL"/"$tempSubdir" -O "$projectName.html" &> /dev/null
-    dos2unix "$projectName.html" > /dev/null
+    dos2unix "$projectName.html" &> /dev/null
     sed -n 's/.*href="\([^"]*\).*/\1/p' "$projectName.html" \
       | sed 's|^'"$branchesURL/$tempSubdir"'[/]*||;s|[/]\+$||' \
       | grep -E "^$projectName-[0-9]+[.][0-9]+[.][0-9a-z]+[.]tar[.]gz$" \
@@ -52,7 +52,7 @@ rm -f openSourceTrackerWithoutHeader.csv
 
 echo openSourceTracker.csv contents
 cat openSourceTracker.csv
-unix2dos openSourceTracker.csv > /dev/null
+unix2dos openSourceTracker.csv &> /dev/null
 echo uploading $(dataURLFromCloudinary.py openSourceTracker.csv)
 uploadDataToCloudinary.py openSourceTracker.csv openSourceTracker.csv
 
