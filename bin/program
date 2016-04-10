@@ -10,12 +10,17 @@ done
 echo DIR "$TEMP_APP_DIR"
 ls -la "$TEMP_APP_DIR"
 
-if [ ! -f "$TEMP_APP_DIR/testfile" ]
+pushd "$TEMP_APP_DIR"
+
+wget $(dataURLFromCloudinary.py openSourceTracker.csv)
+
+if [ ! -f openSourceTracker.csv ]
 then
-  lineCount=0
-else
-  lineCount=$(cat "$TEMP_APP_DIR/testfile")
+  echo "projectName,URL" > openSourceTracker.csv
 fi
-echo $((1+$lineCount)) > "$TEMP_APP_DIR/testfile"
-cat "$TEMP_APP_DIR/testfile"
+
+uploadDataToCloudinary.py openSourceTracker.csv openSourceTracker.csv
+
+popd
+
 
