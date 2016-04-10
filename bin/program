@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-export
-echo in dir `pwd`
-for each in $(find . -type d | grep -vE "/.git$" | grep -vE "/.git/" | grep -vE "/.heroku$" | grep -vE "/.heroku/")
-do
-  echo DIR "$each"
-  ls -la "$each"
-done
-echo DIR "$TEMP_APP_DIR"
-ls -la "$TEMP_APP_DIR"
+#export
+#echo in dir `pwd`
+#for each in $(find . -type d | grep -vE "/.git$" | grep -vE "/.git/" | grep -vE "/.heroku$" | grep -vE "/.heroku/")
+#do
+#  echo DIR "$each"
+#  ls -la "$each"
+#done
+#echo DIR "$TEMP_APP_DIR"
+#ls -la "$TEMP_APP_DIR"
 
 pushd "$TEMP_APP_DIR" > /dev/null
 
@@ -21,7 +21,7 @@ then
   echo "projectName,branchesURL" > openSourceTracker.csv
 fi
 
-dos2unix openSourceTracker.csv
+dos2unix openSourceTracker.csv > /dev/null
 
 tail -n+2 openSourceTracker.csv > openSourceTrackerWithoutHeader.csv
 while IFS= read tempLine
@@ -51,7 +51,7 @@ rm -f openSourceTrackerWithoutHeader.csv
 
 echo openSourceTracker.csv contents
 cat openSourceTracker.csv
-unix2dos openSourceTracker.csv
+unix2dos openSourceTracker.csv > /dev/null
 echo uploading $(dataURLFromCloudinary.py openSourceTracker.csv)
 uploadDataToCloudinary.py openSourceTracker.csv openSourceTracker.csv
 
