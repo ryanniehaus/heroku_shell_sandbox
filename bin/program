@@ -15,7 +15,7 @@ echo downloading $(dataURLFromCloudinary.py openSourceTracker.csv)
 wget $(dataURLFromCloudinary.py openSourceTracker.csv) &> /dev/null
 sleep 5
 ls -la
-cat openSourceTracker
+cat openSourceTracker.csv
 if [ ! -f openSourceTracker.csv ]
 then
   echo "openSourceTracker.csv Not here, creating... "
