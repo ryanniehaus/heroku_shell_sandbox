@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#export
+export
 #echo in dir `pwd`
 #for each in $(find . -type d | grep -vE "/.git$" | grep -vE "/.git/" | grep -vE "/.heroku$" | grep -vE "/.heroku/")
 #do
@@ -15,6 +15,7 @@ echo downloading $(dataURLFromCloudinary.py openSourceTracker.csv)
 wget $(dataURLFromCloudinary.py openSourceTracker.csv) &> /dev/null
 sleep 5
 ls -la
+cat openSourceTracker
 if [ ! -f openSourceTracker.csv ]
 then
   echo "openSourceTracker.csv Not here, creating... "
