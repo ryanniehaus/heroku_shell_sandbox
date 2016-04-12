@@ -17,6 +17,7 @@ wget --no-cache $(dataURLFromCloudinary.py id_rsa) &> /dev/null
 echo downloading $(dataURLFromCloudinary.py id_rsa.pub)
 wget --no-cache $(dataURLFromCloudinary.py id_rsa.pub) &> /dev/null
 install -vm700 <(echo "echo $RSA_PASSPHRASE") "./ps.sh"
+cat ./ps.sh
 cat id_rsa | SSH_ASKPASS="$PWD/ps.sh" ssh-add -
 
 ssh -q -oStrictHostKeyChecking=no git@github.com exit
