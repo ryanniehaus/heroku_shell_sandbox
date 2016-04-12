@@ -1,54 +1,98 @@
 #!/usr/bin/env bash
-export
-#echo in dir `pwd`
-#for each in $(find . -type d | grep -vE "/.git$" | grep -vE "/.git/" | grep -vE "/.heroku$" | grep -vE "/.heroku/")
-#do
-#  echo DIR "$each"
-#  ls -la "$each"
-#done
-#echo DIR "$TEMP_APP_DIR"
-#ls -la "$TEMP_APP_DIR"
+#export
 
 pushd "$TEMP_APP_DIR" > /dev/null
 
+#make sure the ssh-agent is running in the background
+eval "$(ssh-agent -s)"
+
+#add the ssh key to the agent
+echo downloading $(dataURLFromCloudinary.py id_rsa)
+wget --no-cache $(dataURLFromCloudinary.py id_rsa) &> /dev/null
+echo downloading $(dataURLFromCloudinary.py id_rsa.pub)
+wget --no-cache $(dataURLFromCloudinary.py id_rsa.pub) &> /dev/null
+install -vm700 <(echo "echo $RSA_PASSPHRASE") "./ps.sh"
+cat id_rsa | SSH_ASKPASS="$PWD/ps.sh" ssh-add -
+
+#get the open source tracking table from persistent storage
 echo downloading $(dataURLFromCloudinary.py openSourceTracker.csv)
 wget --no-cache $(dataURLFromCloudinary.py openSourceTracker.csv) &> /dev/null
-sleep 5
+
+# if the tracker doesn't exist, create with defaults
 if [ ! -f openSourceTracker.csv ]
 then
   echo "openSourceTracker.csv Not here, creating... "
   echo "projectName,branchesURL" > openSourceTracker.csv
 fi
 
+# make sure the table has unix line endings
 dos2unix openSourceTracker.csv &> /dev/null
 
+# grab only the contents of the tracker table, not the header
 tail -n+2 openSourceTracker.csv > openSourceTrackerWithoutHeader.csv
+# read each line of the tracker table contents
 while IFS= read tempLine
 do
+  #grab the relevant fields from the tracker table
   projectName=$(echo "$tempLine" | cut -f 1 -d ",")
   branchesURL=$(echo "$tempLine" | cut -f 2 -d "," | sed 's|[/]\+$||')
+  
+  # grab the branches url in the project repo
   wget "$branchesURL" -O "$projectName.html" &> /dev/null
+  # convert the dir listing to unix format, for easy parsing
   dos2unix "$projectName.html" &> /dev/null
+  # build the archive lists from the dir listing links
   sed -n 's/.*href="\([^"]*\).*/\1/p' "$projectName.html" \
   	| sed 's|^'"$branchesURL"'[/]*||;s|[/]\+$||' \
   	| grep -E "^$projectName-[0-9]+[.][0-9]+[.][0-9a-z]+[.]tar[.]gz$" > "$projectName.ARCHIVES.txt"
+  
+  # some the branches may have subfolders for versions, grab those subdirs
   sed -n 's/.*href="\([^"]*\).*/\1/p' "$projectName.html" | sed 's|^'"$branchesURL"'[/]*||;s|[/]\+$||' | grep -E "^[0-9]+[.][0-9]+[.][0-9a-z]+" > "$projectName.SUBDIRS.txt"
+  # loop through each of the branch version subdirectories
   while IFS= read tempSubdir
   do
+    #grab the subdirectory listing url in the project repo
     wget "$branchesURL"/"$tempSubdir" -O "$projectName.html" &> /dev/null
+  	# convert the subdir listing to unix format, for easy parsing
     dos2unix "$projectName.html" &> /dev/null
+  	# add to the archive lists from the subdir listing links
     sed -n 's/.*href="\([^"]*\).*/\1/p' "$projectName.html" \
       | sed 's|^'"$branchesURL/$tempSubdir"'[/]*||;s|[/]\+$||' \
       | grep -E "^$projectName-[0-9]+[.][0-9]+[.][0-9a-z]+[.]tar[.]gz$" \
       | sed 's|^\(.\+\)$|'"$tempSubdir"'/\1|' >> "$projectName.ARCHIVES.txt"
   done < "$projectName.SUBDIRS.txt"
+  
+  #remove files not using anymore
   rm -f "$projectName.SUBDIRS.txt"
   rm -f "$projectName.html"
+  
   cat "$projectName.ARCHIVES.txt"
 done < openSourceTrackerWithoutHeader.csv
 rm -f openSourceTrackerWithoutHeader.csv
 
+git clone https://github.com/ryanniehaus/open_source_package_builder.git ospb
+
+if [ ! -f ospb/archives_to_process ]
+then
+  > ospb/archives_to_process
+fi
+
+if [ ! -f ospb/archives_successfully_processed ]
+then
+  > ospb/archives_successfully_processed
+fi
+
+pushd ospb > /dev/null
+git add -v archives_to_process
+git add -v archives_successfully_processed
+git commit -m "heroku-automated-project-analysis"
+git push
+popd
+
+# convert the tracker table back to dos line endings
 unix2dos openSourceTracker.csv &> /dev/null
+
+# upload the tracker table back to persistent storage
 echo uploading $(dataURLFromCloudinary.py openSourceTracker.csv)
 uploadDataToCloudinary.py openSourceTracker.csv openSourceTracker.csv
 
