@@ -9,6 +9,7 @@ eval "$(ssh-agent -s)"
 #add the ssh key to the agent
 git config --global user.email "ryan.niehaus@gmail.com"
 git config --global user.name "Ryan Niehaus"
+git config --global credential.https://github.com.username ryanniehaus
 
 echo downloading $(dataURLFromCloudinary.py id_rsa)
 wget --no-cache $(dataURLFromCloudinary.py id_rsa) &> /dev/null
