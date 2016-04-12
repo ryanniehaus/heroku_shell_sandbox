@@ -19,7 +19,7 @@ wget --no-cache $(dataURLFromCloudinary.py id_rsa.pub) &> /dev/null
 install -vm700 <(echo "echo $RSA_PASSPHRASE") "./ps.sh"
 cat id_rsa | SSH_ASKPASS="$PWD/ps.sh" ssh-add -
 
-ssh -oStrictHostKeyChecking=no git@github.com uptime
+ssh -q -oStrictHostKeyChecking=no git@github.com exit
 
 #get the open source tracking table from persistent storage
 echo downloading $(dataURLFromCloudinary.py openSourceTracker.csv)
