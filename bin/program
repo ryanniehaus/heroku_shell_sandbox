@@ -30,7 +30,7 @@ echo "HostName  github.com" >> ~/.ssh/config
 echo "User git" >> ~/.ssh/config
 echo "IdentityFile `pwd`/id_rsa" >> ~/.ssh/config
 
-SSH_ASKPASS=`pwd`"/ps.sh" ssh-add -c id_rsa
+cat id_rsa | SSH_ASKPASS=`pwd`"/ps.sh" ssh-add -
 
 ssh -q -oStrictHostKeyChecking=no git@github.com exit
 echo ssh check returned $?
