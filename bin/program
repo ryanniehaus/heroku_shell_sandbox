@@ -48,6 +48,7 @@ dos2unix openSourceTracker.csv &> /dev/null
 # grab only the contents of the tracker table, not the header
 tail -n+2 openSourceTracker.csv > openSourceTrackerWithoutHeader.csv
 # read each line of the tracker table contents
+> "ARCHIVES.txt"
 while IFS= read tempLine
 do
   #grab the relevant fields from the tracker table
@@ -61,10 +62,11 @@ do
   # build the archive lists from the dir listing links
   sed -n 's/.*href="\([^"]*\).*/\1/p' "$projectName.html" \
   	| sed 's|^'"$branchesURL"'[/]*||;s|[/]\+$||' \
-  	| grep -E "^$projectName-[0-9]+[.][0-9]+[.][0-9a-z]+[.]tar[.]gz$" > "$projectName.ARCHIVES.txt"
+  	| grep -E "^$projectName-[0-9]+[.][0-9]+[.][.0-9a-zA-Z~-]+[.]tar[.]gz$" \
+  	| sed 's|^\($projectName-\)\([0-9]+[.][0-9]+[.][.0-9a-zA-Z~-]+\)\([.]tar[.]gz\)$|'"$projectName"',\2,'"$branchesURL"'/\1\2\3|g' >> "ARCHIVES.txt"
   
   # some the branches may have subfolders for versions, grab those subdirs
-  sed -n 's/.*href="\([^"]*\).*/\1/p' "$projectName.html" | sed 's|^'"$branchesURL"'[/]*||;s|[/]\+$||' | grep -E "^[0-9]+[.][0-9]+[.][0-9a-z]+" > "$projectName.SUBDIRS.txt"
+  sed -n 's/.*href="\([^"]*\).*/\1/p' "$projectName.html" | sed 's|^'"$branchesURL"'[/]*||;s|[/]\+$||' | grep -E "^[0-9]+[.][0-9]+[.][.0-9a-zA-Z~-]+" > "$projectName.SUBDIRS.txt"
   # loop through each of the branch version subdirectories
   while IFS= read tempSubdir
   do
@@ -75,15 +77,13 @@ do
   	# add to the archive lists from the subdir listing links
     sed -n 's/.*href="\([^"]*\).*/\1/p' "$projectName.html" \
       | sed 's|^'"$branchesURL/$tempSubdir"'[/]*||;s|[/]\+$||' \
-      | grep -E "^$projectName-[0-9]+[.][0-9]+[.][0-9a-z]+[.]tar[.]gz$" \
-      | sed 's|^\(.\+\)$|'"$tempSubdir"'/\1|' >> "$projectName.ARCHIVES.txt"
+      | grep -E "^$projectName-[0-9]+[.][0-9]+[.][.0-9a-zA-Z~-]+[.]tar[.]gz$" \
+      | sed 's|^\($projectName-\)\([0-9]+[.][0-9]+[.][.0-9a-zA-Z~-]+\)\([.]tar[.]gz\)$|'"$projectName"',\2,'"$branchesURL"'/'"$tempSubdir"'/\1\2\3|g' >> "ARCHIVES.txt"
   done < "$projectName.SUBDIRS.txt"
   
   #remove files not using anymore
   rm -f "$projectName.SUBDIRS.txt"
   rm -f "$projectName.html"
-  
-  cat "$projectName.ARCHIVES.txt"
 done < openSourceTrackerWithoutHeader.csv
 rm -f openSourceTrackerWithoutHeader.csv
 
@@ -101,7 +101,18 @@ then
 		> ospb/archives_successfully_processed
 	fi
 	
-	
+  while IFS= read archiveLine
+  do
+		projectNameAndVersion=$(echo "$archiveLine" | sed 's|^\([^,]\+\),\([^,]\+\),\([^,]\+\)$|\1,\2,|')
+		alreadyProcessed=$(grep -E "^$projectNameAndVersion" ospb/archives_successfully_processed)
+		alreadyMarkedForProcessing=$(grep -E "^$projectNameAndVersion" ospb/archives_to_process)
+		
+		if [ "$alreadyProcessed" == "" -a "$alreadyMarkedForProcessing" == "" ]
+		then
+		  echo ADDING $(echo "$archiveLine" | cut -f 1 -d ",") VERSION $(echo "$archiveLine" | cut -f 2 -d ",") TO LIST
+		  echo "$archiveLine" >> ospb/archives_to_process
+		fi
+	done < "ARCHIVES.txt"
 	
 	pushd ospb > /dev/null
 	git add -v archives_to_process
