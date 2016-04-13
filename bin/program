@@ -107,8 +107,6 @@ then
 		alreadyProcessed=$(grep -E "^$projectNameAndVersion" ospb/archives_successfully_processed)
 		alreadyMarkedForProcessing=$(grep -E "^$projectNameAndVersion" ospb/archives_to_process)
 		
-		echo "$archiveLine"
-		
 		if [ "$alreadyProcessed" == "" -a "$alreadyMarkedForProcessing" == "" ]
 		then
 		  echo ADDING $(echo "$archiveLine" | cut -f 1 -d ",") VERSION $(echo "$archiveLine" | cut -f 2 -d ",") TO LIST
