@@ -31,7 +31,7 @@ echo "User git" >> ~/.ssh/config
 echo "IdentityFile `pwd`/id_rsa" >> ~/.ssh/config
 
 #cat id_rsa | SSH_ASKPASS=`pwd`"/ps.sh" ssh-add -
-SSH_ASKPASS=`pwd`"/ps.sh" ssh-add id_rsa
+./ps.sh | ssh-add id_rsa
 
 ssh -q -oStrictHostKeyChecking=no git@github.com exit
 echo ssh check returned $?
