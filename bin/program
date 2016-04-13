@@ -19,6 +19,8 @@ wget --no-cache $(dataURLFromCloudinary.py id_rsa.pub) &> /dev/null
 
 find / -iname *init.tcl*
 
+ln -s ~/.apt/usr/share/tcltk/tcl8.6 ~/.apt/usr/lib/tcl8.6
+
 echo "#!/usr/bin/env expect" > `pwd`"/ps.sh"
 echo "cat id_rsa | ssh-add -" >> `pwd`"/ps.sh"
 echo "expect \"Enter passphrase for (stdin):\"" >> `pwd`"/ps.sh"
