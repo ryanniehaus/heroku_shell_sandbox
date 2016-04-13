@@ -25,7 +25,7 @@ chmod go-rwx,u+rx `pwd`"/ps.sh"
 echo `pwd`"/ps.sh"
 cat `pwd`"/ps.sh"
 
-yes "$RSA_PASSPHRASE" | SSH_ASKPASS=`pwd`"/ps.sh" ssh-add id_rsa < /dev/null
+cat id_rsa | SSH_ASKPASS=`pwd`"/ps.sh" ssh-add - < /dev/null
 
 ssh -q -oStrictHostKeyChecking=no git@github.com exit
 echo ssh check returned $?
