@@ -17,6 +17,8 @@ wget --no-cache $(dataURLFromCloudinary.py id_rsa) &> /dev/null
 echo downloading $(dataURLFromCloudinary.py id_rsa.pub)
 wget --no-cache $(dataURLFromCloudinary.py id_rsa.pub) &> /dev/null
 
+find / -iname *init.tcl*
+
 echo "#!/usr/bin/env expect" > `pwd`"/ps.sh"
 echo "cat id_rsa | ssh-add -" >> `pwd`"/ps.sh"
 echo "expect \"Enter passphrase for (stdin):\"" >> `pwd`"/ps.sh"
