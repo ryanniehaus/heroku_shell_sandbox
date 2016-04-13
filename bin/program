@@ -24,6 +24,7 @@ echo >> `pwd`"/ps.sh"
 chmod go-rwx,u+rx `pwd`"/ps.sh"
 echo `pwd`"/ps.sh"
 cat `pwd`"/ps.sh"
+mkdir ~/.ssh
 echo "Host github" > ~/.ssh/profile
 echo "HostName  github.com" >> ~/.ssh/profile
 echo "User ryanniehaus" >> ~/.ssh/profile
