@@ -34,6 +34,7 @@ echo "IdentityFile `pwd`/id_rsa" >> ~/.ssh/config
 #cat id_rsa | SSH_ASKPASS=`pwd`"/ps.sh" ssh-add -
 
 ssh -q -oStrictHostKeyChecking=no git@github.com exit
+echo ssh check returned $?
 
 #get the open source tracking table from persistent storage
 echo downloading $(dataURLFromCloudinary.py openSourceTracker.csv)
