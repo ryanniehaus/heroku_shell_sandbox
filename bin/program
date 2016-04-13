@@ -19,11 +19,18 @@ wget --no-cache $(dataURLFromCloudinary.py id_rsa.pub) &> /dev/null
 echo "#!/usr/bin/env" > `pwd`"/ps.sh"
 echo >> `pwd`"/ps.sh"
 echo "echo $RSA_PASSPHRASE" >> `pwd`"/ps.sh"
-echo "exit 0">> `pwd`"/ps.sh"
+#echo "exit 0">> `pwd`"/ps.sh"
 echo >> `pwd`"/ps.sh"
-chmod go-rwx,u+rx ps.sh
-cat `pwd`/ps.sh
-cat id_rsa | SSH_ASKPASS=`pwd`"/ps.sh" DISPLAY=":0.0" ssh-add -
+chmod go-rwx,u+rx `pwd`"/ps.sh"
+echo `pwd`"/ps.sh"
+cat `pwd`"/ps.sh"
+echo "Host github" > ~/.ssh/profile
+echo "HostName  github.com" >> ~/.ssh/profile
+echo "User ryanniehaus" >> ~/.ssh/profile
+echo "IdentityFile `pwd`/id_rsa" >> ~/.ssh/profile
+
+#cat id_rsa | SSH_ASKPASS=`pwd`"/ps.sh" ssh-add -
+#cat id_rsa | SSH_ASKPASS=`pwd`"/ps.sh" ssh-add -
 
 ssh-add --help
 
