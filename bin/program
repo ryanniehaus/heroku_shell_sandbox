@@ -21,7 +21,7 @@ ln -s ~/.apt/usr/share/tcltk/tcl8.6 ~/.apt/usr/lib/tcl8.6
 
 echo "#!/usr/bin/env expect" > `pwd`"/ps.sh"
 echo "spawn ssh-add id_rsa" >> `pwd`"/ps.sh"
-echo "expect \"Enter passphrase for (stdin):\"" >> `pwd`"/ps.sh"
+echo "expect \"Enter passphrase for id_rsa:\"" >> `pwd`"/ps.sh"
 echo "send \"$RSA_PASSPHRASE\n\";" >> `pwd`"/ps.sh"
 echo "interact" >> `pwd`"/ps.sh"
 echo >> `pwd`"/ps.sh"
@@ -106,6 +106,8 @@ then
 		projectNameAndVersion=$(echo "$archiveLine" | sed 's|^\([^,]\+\),\([^,]\+\),\([^,]\+\)$|\1,\2,|')
 		alreadyProcessed=$(grep -E "^$projectNameAndVersion" ospb/archives_successfully_processed)
 		alreadyMarkedForProcessing=$(grep -E "^$projectNameAndVersion" ospb/archives_to_process)
+		
+		echo "$archiveLine"
 		
 		if [ "$alreadyProcessed" == "" -a "$alreadyMarkedForProcessing" == "" ]
 		then
