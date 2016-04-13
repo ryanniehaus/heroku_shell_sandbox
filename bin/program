@@ -63,7 +63,7 @@ do
   sed -n 's/.*href="\([^"]*\).*/\1/p' "$projectName.html" \
   	| sed 's|^'"$branchesURL"'[/]*||;s|[/]\+$||' \
   	| grep -E "^$projectName-[0-9]+[.][0-9]+[.][.0-9a-zA-Z~-]+[.]tar[.]gz$" \
-  	| sed 's|^\($projectName-\)\([0-9]+[.][0-9]+[.][.0-9a-zA-Z~-]+\)\([.]tar[.]gz\)$|'"$projectName"',\2,'"$branchesURL"'/\1\2\3|g' >> "ARCHIVES.txt"
+  	| sed 's|^\('"$projectName"'-\)\([0-9]+[.][0-9]+[.][.0-9a-zA-Z~-]+\)\([.]tar[.]gz\)$|'"$projectName"',\2,'"$branchesURL"'/\1\2\3|g' >> "ARCHIVES.txt"
   
   # some the branches may have subfolders for versions, grab those subdirs
   sed -n 's/.*href="\([^"]*\).*/\1/p' "$projectName.html" | sed 's|^'"$branchesURL"'[/]*||;s|[/]\+$||' | grep -E "^[0-9]+[.][0-9]+[.][.0-9a-zA-Z~-]+" > "$projectName.SUBDIRS.txt"
@@ -78,7 +78,7 @@ do
     sed -n 's/.*href="\([^"]*\).*/\1/p' "$projectName.html" \
       | sed 's|^'"$branchesURL/$tempSubdir"'[/]*||;s|[/]\+$||' \
       | grep -E "^$projectName-[0-9]+[.][0-9]+[.][.0-9a-zA-Z~-]+[.]tar[.]gz$" \
-      | sed 's|^\($projectName-\)\([0-9]+[.][0-9]+[.][.0-9a-zA-Z~-]+\)\([.]tar[.]gz\)$|'"$projectName"',\2,'"$branchesURL"'/'"$tempSubdir"'/\1\2\3|g' >> "ARCHIVES.txt"
+      | sed 's|^\('"$projectName"'-\)\([0-9]+[.][0-9]+[.][.0-9a-zA-Z~-]+\)\([.]tar[.]gz\)$|'"$projectName"',\2,'"$branchesURL"'/'"$tempSubdir"'/\1\2\3|g' >> "ARCHIVES.txt"
   done < "$projectName.SUBDIRS.txt"
   
   #remove files not using anymore
