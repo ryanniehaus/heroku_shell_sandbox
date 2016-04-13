@@ -16,18 +16,15 @@ echo downloading $(dataURLFromCloudinary.py id_rsa)
 wget --no-cache $(dataURLFromCloudinary.py id_rsa) &> /dev/null
 echo downloading $(dataURLFromCloudinary.py id_rsa.pub)
 wget --no-cache $(dataURLFromCloudinary.py id_rsa.pub) &> /dev/null
-echo "#!/usr/bin/env" > `pwd`"/ps.sh"
-echo >> `pwd`"/ps.sh"
-echo "echo $RSA_PASSPHRASE" >> `pwd`"/ps.sh"
-echo "exit 0">> `pwd`"/ps.sh"
+
+echo "#!/usr/bin/expect -f" > `pwd`"/ps.sh"
+echo "cat id_rsa | ssh-add -" >> `pwd`"/ps.sh"
+echo "expect \"Enter passphrase for (stdin):\"" >> `pwd`"/ps.sh"
+echo "send \"$RSA_PASSPHRASE\n\";" >> `pwd`"/ps.sh"
+echo "interact" >> `pwd`"/ps.sh"
 echo >> `pwd`"/ps.sh"
 chmod go-rwx,u+rx `pwd`"/ps.sh"
-echo `pwd`"/ps.sh"
-cat `pwd`"/ps.sh"
-echo "$RSA_PASSPHRASE" > tempps
-echo >> tempps
-
-cat id_rsa | SSH_ASKPASS=`pwd`"/ps.sh" ssh-add - < tempps
+`pwd`"/ps.sh"
 
 ssh -q -oStrictHostKeyChecking=no git@github.com exit
 echo ssh check returned $?
