@@ -24,6 +24,8 @@ chmod go-rwx,u+rx ps.sh
 cat `pwd`/ps.sh
 cat id_rsa | SSH_ASKPASS=`pwd`"/ps.sh" ssh-add -
 
+ssh-add --help
+
 ssh -q -oStrictHostKeyChecking=no git@github.com exit
 
 #get the open source tracking table from persistent storage
@@ -94,12 +96,15 @@ then
   > ospb/archives_successfully_processed
 fi
 
-pushd ospb > /dev/null
-git add -v archives_to_process
-git add -v archives_successfully_processed
-git commit -m "heroku-automated-project-analysis"
-git push
-popd
+if [ -d ospb ]
+then
+	pushd ospb > /dev/null
+	git add -v archives_to_process
+	git add -v archives_successfully_processed
+	git commit -m "heroku-automated-project-analysis"
+	git push
+	popd > /dev/null
+fi
 
 # convert the tracker table back to dos line endings
 unix2dos openSourceTracker.csv &> /dev/null
