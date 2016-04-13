@@ -19,10 +19,11 @@ wget --no-cache $(dataURLFromCloudinary.py id_rsa.pub) &> /dev/null
 echo "#!/usr/bin/env" > `pwd`"/ps.sh"
 echo >> `pwd`"/ps.sh"
 echo "echo $RSA_PASSPHRASE" >> `pwd`"/ps.sh"
+echo "exit 0">> `pwd`"/ps.sh"
 echo >> `pwd`"/ps.sh"
 chmod go-rwx,u+rx ps.sh
 cat `pwd`/ps.sh
-cat id_rsa | SSH_ASKPASS=`pwd`"/ps.sh" ssh-add -
+cat id_rsa | SSH_ASKPASS=`pwd`"/ps.sh" DISPLAY=":0.0" ssh-add -
 
 ssh-add --help
 
@@ -86,18 +87,20 @@ rm -f openSourceTrackerWithoutHeader.csv
 
 git clone git@github.com:ryanniehaus/open_source_package_builder.git ospb
 
-if [ ! -f ospb/archives_to_process ]
-then
-  > ospb/archives_to_process
-fi
-
-if [ ! -f ospb/archives_successfully_processed ]
-then
-  > ospb/archives_successfully_processed
-fi
-
 if [ -d ospb ]
 then
+	if [ ! -f ospb/archives_to_process ]
+	then
+		> ospb/archives_to_process
+	fi
+
+	if [ ! -f ospb/archives_successfully_processed ]
+	then
+		> ospb/archives_successfully_processed
+	fi
+	
+	
+	
 	pushd ospb > /dev/null
 	git add -v archives_to_process
 	git add -v archives_successfully_processed
