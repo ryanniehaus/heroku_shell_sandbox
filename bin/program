@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 #export
 
+GIT_REPO_URL="git@github.com:ryanniehaus/open_source_package_builder.git"
+
 pushd "$TEMP_APP_DIR" > /dev/null
 
 #make sure the ssh-agent is running in the background
@@ -40,8 +42,8 @@ wget --no-cache $(dataURLFromCloudinary.py openSourceTracker.csv) &> /dev/null
 # if the tracker doesn't exist, create with defaults
 if [ ! -f openSourceTracker.csv ]
 then
-  echo "openSourceTracker.csv Not here, creating... "
-  echo "projectName,branchesURL" > openSourceTracker.csv
+	echo "openSourceTracker.csv Not here, creating... "
+	echo "projectName,branchesURL" > openSourceTracker.csv
 fi
 
 # make sure the table has unix line endings
@@ -53,43 +55,46 @@ tail -n+2 openSourceTracker.csv > openSourceTrackerWithoutHeader.csv
 > "ARCHIVES.txt"
 while IFS= read tempLine
 do
-  #grab the relevant fields from the tracker table
-  projectName=$(echo "$tempLine" | cut -f 1 -d ",")
-  branchesURL=$(echo "$tempLine" | cut -f 2 -d "," | sed 's|[/]\+$||')
-  
-  # grab the branches url in the project repo
-  wget "$branchesURL" -O "$projectName.html" &> /dev/null
-  # convert the dir listing to unix format, for easy parsing
-  dos2unix "$projectName.html" &> /dev/null
-  # build the archive lists from the dir listing links
-  sed -n 's/.*href="\([^"]*\).*/\1/p' "$projectName.html" \
-  	| sed 's|^'"$branchesURL"'[/]*||;s|[/]\+$||' \
-  	| grep -E "^$projectName-[0-9]+[.][0-9]+[.][.0-9a-zA-Z~-]+[.]tar[.]gz$" \
-  	| sed 's|^\('"$projectName"'-\)\([0-9]\+[.][0-9]\+[.][.0-9a-zA-Z~-]\+\)\([.]tar[.]gz\)$|'"$projectName"',\2,'"$branchesURL"'/\1\2\3|g' >> "ARCHIVES.txt"
-  
-  # some the branches may have subfolders for versions, grab those subdirs
-  sed -n 's/.*href="\([^"]*\).*/\1/p' "$projectName.html" | sed 's|^'"$branchesURL"'[/]*||;s|[/]\+$||' | grep -E "^[0-9]+[.][0-9]+[.][.0-9a-zA-Z~-]+" > "$projectName.SUBDIRS.txt"
-  # loop through each of the branch version subdirectories
-  while IFS= read tempSubdir
-  do
-    #grab the subdirectory listing url in the project repo
-    wget "$branchesURL"/"$tempSubdir" -O "$projectName.html" &> /dev/null
-  	# convert the subdir listing to unix format, for easy parsing
-    dos2unix "$projectName.html" &> /dev/null
-  	# add to the archive lists from the subdir listing links
-    sed -n 's/.*href="\([^"]*\).*/\1/p' "$projectName.html" \
-      | sed 's|^'"$branchesURL/$tempSubdir"'[/]*||;s|[/]\+$||' \
-      | grep -E "^$projectName-[0-9]+[.][0-9]+[.][.0-9a-zA-Z~-]+[.]tar[.]gz$" \
-      | sed 's|^\('"$projectName"'-\)\([0-9]\+[.][0-9]\+[.][.0-9a-zA-Z~-]\+\)\([.]tar[.]gz\)$|'"$projectName"',\2,'"$branchesURL"'/'"$tempSubdir"'/\1\2\3|g' >> "ARCHIVES.txt"
-  done < "$projectName.SUBDIRS.txt"
-  
-  #remove files not using anymore
-  rm -f "$projectName.SUBDIRS.txt"
-  rm -f "$projectName.html"
+	#grab the relevant fields from the tracker table
+	projectName=$(echo "$tempLine" | cut -f 1 -d ",")
+	branchesURL=$(echo "$tempLine" | cut -f 2 -d "," | sed 's|[/]\+$||')
+
+	# grab the branches url in the project repo
+	wget "$branchesURL" -O "$projectName.html" &> /dev/null
+	# convert the dir listing to unix format, for easy parsing
+	dos2unix "$projectName.html" &> /dev/null
+	# build the archive lists from the dir listing links
+	sed -n 's/.*href="\([^"]*\).*/\1/p' "$projectName.html" \
+		| sed 's|^'"$branchesURL"'[/]*||;s|[/]\+$||' \
+		| grep -E "^$projectName-[0-9]+[.][0-9]+[.][.0-9a-zA-Z~-]+[.]tar[.]gz$" \
+		| sed 's|^\('"$projectName"'-\)\([0-9]\+[.][0-9]\+[.][.0-9a-zA-Z~-]\+\)\([.]tar[.]gz\)$|'"$projectName"',\2,'"$branchesURL"'/\1\2\3|g' >> "ARCHIVES.txt"
+
+	# some the branches may have subfolders for versions, grab those subdirs
+	sed -n 's/.*href="\([^"]*\).*/\1/p' "$projectName.html" | sed 's|^'"$branchesURL"'[/]*||;s|[/]\+$||' | grep -E "^[0-9]+[.][0-9]+[.][.0-9a-zA-Z~-]+" > "$projectName.SUBDIRS.txt"
+	# loop through each of the branch version subdirectories
+	while IFS= read tempSubdir
+	do
+		#grab the subdirectory listing url in the project repo
+		wget "$branchesURL"/"$tempSubdir" -O "$projectName.html" &> /dev/null
+		# convert the subdir listing to unix format, for easy parsing
+		dos2unix "$projectName.html" &> /dev/null
+		# add to the archive lists from the subdir listing links
+		sed -n 's/.*href="\([^"]*\).*/\1/p' "$projectName.html" \
+			| sed 's|^'"$branchesURL/$tempSubdir"'[/]*||;s|[/]\+$||' \
+			| grep -E "^$projectName-[0-9]+[.][0-9]+[.][.0-9a-zA-Z~-]+[.]tar[.]gz$" \
+			| sed 's|^\('"$projectName"'-\)\([0-9]\+[.][0-9]\+[.][.0-9a-zA-Z~-]\+\)\([.]tar[.]gz\)$|'"$projectName"',\2,'"$branchesURL"'/'"$tempSubdir"'/\1\2\3|g' >> "ARCHIVES.txt"
+	done < "$projectName.SUBDIRS.txt"
+
+	#remove files not using anymore
+	rm -f "$projectName.SUBDIRS.txt"
+	rm -f "$projectName.html"
 done < openSourceTrackerWithoutHeader.csv
 rm -f openSourceTrackerWithoutHeader.csv
 
-git clone git@github.com:ryanniehaus/open_source_package_builder.git ospb
+sort -t"," -d -k1,1 -V -k2,2 "ARCHIVES.txt"
+cat "ARCHIVES.txt"
+
+git clone "$GIT_REPO_URL" ospb
 
 if [ -d ospb ]
 then
@@ -107,28 +112,43 @@ then
 	then
 		> ospb/archives_blacklisted
 	fi
-	
-  while IFS= read archiveLine
-  do
+
+	while IFS= read archiveLine
+	do
 		projectNameAndVersion=$(echo "$archiveLine" | sed 's|^\([^,]\+\),\([^,]\+\),\([^,]\+\)$|\1,\2,|')
 		alreadyProcessed=$(grep -E "^$projectNameAndVersion" ospb/archives_successfully_processed)
 		alreadyMarkedForProcessing=$(grep -E "^$projectNameAndVersion" ospb/archives_to_process)
 		alreadyBlacklisted=$(grep -E "^$projectNameAndVersion" ospb/archives_blacklisted)
-		
+		projectName=$(echo "$projectNameAndVersion" | cut -f 1 -d ",")
+		projectVersion=$(echo "$projectNameAndVersion" | cut -f 2 -d ",")
+
 		if [ "$alreadyProcessed" == "" -a "$alreadyMarkedForProcessing" == "" -a "$alreadyBlacklisted" == "" ]
 		then
-		  echo ADDING $(echo "$archiveLine" | cut -f 1 -d ",") VERSION $(echo "$archiveLine" | cut -f 2 -d ",") TO LIST
-		  echo "$archiveLine" >> ospb/archives_to_process
+			echo ADDING $(echo "$archiveLine" | cut -f 1 -d ",") VERSION $(echo "$archiveLine" | cut -f 2 -d ",") TO LIST
+			echo "$archiveLine" > ospb/archives_to_process
+			
+			pushd ospb > /dev/null
+			git add -v archives_to_process
+			git add -v archives_successfully_processed
+			git add -v archives_blacklisted
+			git commit -m "heroku-automated-project-analysis"
+			git push
+			
+			branchExists=$(git branch -r --list | sed 's|^[ \t]\+||;s|[ \t]\+$||' | grep origin/RELEASE_"$projectName"v"$projectVersion")
+			
+			if [ "$branchExists" == "" ]
+			then
+				# create branch
+				git branch -v origin/RELEASE_"$projectName"v"$projectVersion"
+			else
+				# merge master to branch
+				git checkout testing
+				git merge --commit master -m "merging latest master to branch using heroku-automated-project-analysis"
+				git push
+			fi
+			popd > /dev/null
 		fi
 	done < "ARCHIVES.txt"
-	
-	pushd ospb > /dev/null
-	git add -v archives_to_process
-	git add -v archives_successfully_processed
-	git add -v archives_blacklisted
-	git commit -m "heroku-automated-project-analysis"
-	git push
-	popd > /dev/null
 fi
 
 # convert the tracker table back to dos line endings
