@@ -100,14 +100,20 @@ then
 	then
 		> ospb/archives_successfully_processed
 	fi
+
+	if [ ! -f ospb/archives_blacklisted ]
+	then
+		> ospb/archives_blacklisted
+	fi
 	
   while IFS= read archiveLine
   do
 		projectNameAndVersion=$(echo "$archiveLine" | sed 's|^\([^,]\+\),\([^,]\+\),\([^,]\+\)$|\1,\2,|')
 		alreadyProcessed=$(grep -E "^$projectNameAndVersion" ospb/archives_successfully_processed)
 		alreadyMarkedForProcessing=$(grep -E "^$projectNameAndVersion" ospb/archives_to_process)
+		alreadyBlacklisted=$(grep -E "^$projectNameAndVersion" ospb/archives_blacklisted)
 		
-		if [ "$alreadyProcessed" == "" -a "$alreadyMarkedForProcessing" == "" ]
+		if [ "$alreadyProcessed" == "" -a "$alreadyMarkedForProcessing" == "" -a "$alreadyBlacklisted" == "" ]
 		then
 		  echo ADDING $(echo "$archiveLine" | cut -f 1 -d ",") VERSION $(echo "$archiveLine" | cut -f 2 -d ",") TO LIST
 		  echo "$archiveLine" >> ospb/archives_to_process
@@ -117,6 +123,7 @@ then
 	pushd ospb > /dev/null
 	git add -v archives_to_process
 	git add -v archives_successfully_processed
+	git add -v archives_blacklisted
 	git commit -m "heroku-automated-project-analysis"
 	git push
 	popd > /dev/null
