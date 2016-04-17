@@ -91,10 +91,11 @@ do
 done < openSourceTrackerWithoutHeader.csv
 rm -f openSourceTrackerWithoutHeader.csv
 
-sort -t"," -d -k1,1 -V -k2,2 "ARCHIVES.txt"
-echo " -- ARCHIVES.txt BEGINS -- "
-cat "ARCHIVES.txt"
-echo " -- ARCHIVES.txt ENDS -- "
+sort -t"," -d -k1,1 -V -k2,2 "ARCHIVES.txt" > "newARCHIVES.txt"
+mv -v "newARCHIVES.txt" "ARCHIVES.txt"
+#echo " -- ARCHIVES.txt BEGINS -- "
+#cat "ARCHIVES.txt"
+#echo " -- ARCHIVES.txt ENDS -- "
 
 git clone "$GIT_REPO_URL" ospb
 
@@ -136,19 +137,21 @@ then
 			git commit -m "heroku-automated-project-analysis"
 			git push
 			
-			branchExists=$(git branch -r --list | sed 's|^[ \t]\+||;s|[ \t]\+$||' | grep origin/RELEASE_"$projectName"v"$projectVersion")
+			currentBranchName=origin/RELEASE_"$projectName"v"$projectVersion"
+			branchExists=$(git branch -r --list | sed 's|^[ \t]\+||;s|[ \t]\+$||' | grep "$currentBranchName")
 			
 			if [ "$branchExists" == "" ]
 			then
 				# create branch
-				echo BRANCH origin/RELEASE_"$projectName"v"$projectVersion" IS BEING CREATED
-				git branch -v origin/RELEASE_"$projectName"v"$projectVersion"
+				echo BRANCH "$currentBranchName" IS BEING CREATED
+				git branch -v "$currentBranchName"
 			else
 				# merge master to branch
-				echo BRANCH origin/RELEASE_"$projectName"v"$projectVersion" EXISTS
+				echo BRANCH "$currentBranchName" EXISTS
 				git checkout testing
 				git merge --commit master -m "merging latest master to branch using heroku-automated-project-analysis"
 				git push
+				git checkout master
 			fi
 			popd > /dev/null
 		fi
