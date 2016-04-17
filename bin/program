@@ -146,7 +146,7 @@ then
 			else
 				# merge master to branch
 				echo BRANCH "$currentBranchName" EXISTS
-				git checkout testing
+				git checkout "$currentBranchName"
 				git merge --commit master -m "merging latest master to branch "$currentBranchName" using heroku-automated-project-analysis"
 				git push
 				git checkout master
