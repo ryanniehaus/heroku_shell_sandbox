@@ -101,10 +101,7 @@ git clone "$GIT_REPO_URL" ospb
 
 if [ -d ospb ]
 then
-	if [ ! -f ospb/archives_to_process ]
-	then
-		> ospb/archives_to_process
-	fi
+	> ospb/archives_to_process
 
 	if [ ! -f ospb/archives_successfully_processed ]
 	then
@@ -134,22 +131,23 @@ then
 			git add -v archives_to_process
 			git add -v archives_successfully_processed
 			git add -v archives_blacklisted
-			git commit -m "heroku-automated-project-analysis"
+			git commit -m "heroku-automated-project-analysis (adding )"
 			git push
 			
-			currentBranchName=origin/RELEASE_"$projectName"v"$projectVersion"
-			branchExists=$(git branch -r --list | sed 's|^[ \t]\+||;s|[ \t]\+$||' | grep "$currentBranchName")
+			currentBranchName=RELEASE_"$projectName"v"$projectVersion"
+			branchExists=$(git branch -r --list | sed 's|^[ \t]\+||;s|[ \t]\+$||' | grep origin/"$currentBranchName")
 			
 			if [ "$branchExists" == "" ]
 			then
 				# create branch
 				echo BRANCH "$currentBranchName" IS BEING CREATED
-				git branch -v "$currentBranchName"
+				#git branch -v "$currentBranchName"
+				git push origin HEAD:refs/heads/"$currentBranchName"
 			else
 				# merge master to branch
 				echo BRANCH "$currentBranchName" EXISTS
 				git checkout testing
-				git merge --commit master -m "merging latest master to branch using heroku-automated-project-analysis"
+				git merge --commit master -m "merging latest master to branch "$currentBranchName" using heroku-automated-project-analysis"
 				git push
 				git checkout master
 			fi
