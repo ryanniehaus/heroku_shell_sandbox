@@ -92,7 +92,9 @@ done < openSourceTrackerWithoutHeader.csv
 rm -f openSourceTrackerWithoutHeader.csv
 
 sort -t"," -d -k1,1 -V -k2,2 "ARCHIVES.txt"
+echo " -- ARCHIVES.txt BEGINS -- "
 cat "ARCHIVES.txt"
+echo " -- ARCHIVES.txt ENDS -- "
 
 git clone "$GIT_REPO_URL" ospb
 
@@ -139,9 +141,11 @@ then
 			if [ "$branchExists" == "" ]
 			then
 				# create branch
+				echo BRANCH origin/RELEASE_"$projectName"v"$projectVersion" IS BEING CREATED
 				git branch -v origin/RELEASE_"$projectName"v"$projectVersion"
 			else
 				# merge master to branch
+				echo BRANCH origin/RELEASE_"$projectName"v"$projectVersion" EXISTS
 				git checkout testing
 				git merge --commit master -m "merging latest master to branch using heroku-automated-project-analysis"
 				git push
