@@ -131,7 +131,7 @@ then
 			git add -v archives_to_process
 			git add -v archives_successfully_processed
 			git add -v archives_blacklisted
-			git commit -m "heroku-automated-project-analysis (adding )"
+			git commit -m "heroku-automated-project-analysis (adding $projectName v$projectVersion)"
 			git push
 			
 			currentBranchName=RELEASE_"$projectName"v"$projectVersion"
