@@ -91,7 +91,7 @@ do
 done < openSourceTrackerWithoutHeader.csv
 rm -f openSourceTrackerWithoutHeader.csv
 
-sort -t"," -d -k1,1 -V -k2,2 "ARCHIVES.txt" > "newARCHIVES.txt"
+sort -t"," -k1,1d -k2,2V "ARCHIVES.txt" > "newARCHIVES.txt"
 mv -v "newARCHIVES.txt" "ARCHIVES.txt"
 #echo " -- ARCHIVES.txt BEGINS -- "
 #cat "ARCHIVES.txt"
