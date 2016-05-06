@@ -56,6 +56,7 @@ do
 	#grab the relevant fields from the tracker table
 	projectName=$(echo "$tempLine" | cut -f 1 -d ",")
 	branchesURL=$(echo "$tempLine" | cut -f 2 -d "," | sed 's|[/]\+$||')
+	branchesURLWithoutDomain=$(echo "$branchesURL" | sed 's|^[^:]\+:[/]\+||;s|^[^/]\+||')
 
 	# grab the branches url in the project repo
 	wget "$branchesURL" -O "$projectName.html" &> /dev/null
@@ -63,12 +64,14 @@ do
 	dos2unix "$projectName.html" &> /dev/null
 	# build the archive lists from the dir listing links
 	sed -n 's/.*href="\([^"]*\).*/\1/p' "$projectName.html" \
-		| sed 's|^'"$branchesURL"'[/]*||;s|[/]\+$||' \
+		| sed 's|^'"$branchesURL"'[/]*||;s|^'"$branchesURLWithoutDomain"'[/]*||;s|[/]\+$||' \
 		| grep -E "^$projectName-[0-9]+[.][0-9]+[.][.0-9a-zA-Z~-]+[.]tar[.]gz$" \
 		| sed 's|^\('"$projectName"'-\)\([0-9]\+[.][0-9]\+[.][.0-9a-zA-Z~-]\+\)\([.]tar[.]gz\)$|'"$projectName"',\2,'"$branchesURL"'/\1\2\3|g' >> "ARCHIVES.txt"
 
 	# some the branches may have subfolders for versions, grab those subdirs
-	sed -n 's/.*href="\([^"]*\).*/\1/p' "$projectName.html" | sed 's|^'"$branchesURL"'[/]*||;s|[/]\+$||' | grep -E "^[0-9]+[.][0-9]+[.][.0-9a-zA-Z~-]+" > "$projectName.SUBDIRS.txt"
+	sed -n 's/.*href="\([^"]*\).*/\1/p' "$projectName.html" \
+  		| sed 's|^'"$branchesURL"'[/]*||;s|^'"$branchesURLWithoutDomain"'[/]*||;s|[/]\+$||' \
+  		| grep -E "^(""$projectName""-|)[0-9]+[.][0-9]+[.][.0-9a-zA-Z~+-]+" > "$projectName.SUBDIRS.txt"
 	# loop through each of the branch version subdirectories
 	while IFS= read tempSubdir
 	do
@@ -78,7 +81,7 @@ do
 		dos2unix "$projectName.html" &> /dev/null
 		# add to the archive lists from the subdir listing links
 		sed -n 's/.*href="\([^"]*\).*/\1/p' "$projectName.html" \
-			| sed 's|^'"$branchesURL/$tempSubdir"'[/]*||;s|[/]\+$||' \
+			| sed 's|^'"$branchesURL"'[/]*||;s|^'"$branchesURLWithoutDomain"'[/]*||;s|[/]\+$||' \
 			| grep -E "^$projectName-[0-9]+[.][0-9]+[.][.0-9a-zA-Z~-]+[.]tar[.]gz$" \
 			| sed 's|^\('"$projectName"'-\)\([0-9]\+[.][0-9]\+[.][.0-9a-zA-Z~-]\+\)\([.]tar[.]gz\)$|'"$projectName"',\2,'"$branchesURL"'/'"$tempSubdir"'/\1\2\3|g' >> "ARCHIVES.txt"
 	done < "$projectName.SUBDIRS.txt"
