@@ -32,7 +32,7 @@ echo >> `pwd`"/ps.sh"
 chmod go-rwx,u+rx `pwd`"/ps.sh"
 `pwd`"/ps.sh"
 
-ssh -q -oStrictHostKeyChecking=no git@github.com exit
+ssh -q -oStrictHostKeyChecking=no git@github.com
 echo ssh check returned $?
 
 #get the open source tracking table from persistent storage
