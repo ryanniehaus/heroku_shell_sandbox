@@ -25,7 +25,7 @@ ln -s ~/.apt/usr/share/tcltk/tcl8.6 ~/.apt/usr/lib/tcl8.6
 
 echo "#!/usr/bin/env expect" > `pwd`"/ps.sh"
 echo "spawn ssh-add id_rsa" >> `pwd`"/ps.sh"
-echo "expect \"Enter passphrase for id_rsa:\"" >> `pwd`"/ps.sh"
+echo "expect \"Enter passphrase for id_rsa: \"" >> `pwd`"/ps.sh"
 echo "send \"$RSA_PASSPHRASE\n\";" >> `pwd`"/ps.sh"
 echo "interact" >> `pwd`"/ps.sh"
 echo >> `pwd`"/ps.sh"
