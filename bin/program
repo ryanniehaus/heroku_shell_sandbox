@@ -71,7 +71,7 @@ do
 	# some the branches may have subfolders for versions, grab those subdirs
 	sed -n 's/.*href="\([^"]*\).*/\1/p' "$projectName.html" \
   		| sed 's|^'"$branchesURL"'[/]*||;s|^'"$branchesURLWithoutDomain"'[/]*||;s|[/]\+$||' \
-  		| grep -E "^(""$projectName""-|)[0-9]+[.][0-9]+[.][.0-9a-zA-Z~+-]+" > "$projectName.SUBDIRS.txt"
+  		| grep -E "^(""$projectName""-|)[0-9]+[.][0-9]+[.][.0-9a-zA-Z~+-]+$" > "$projectName.SUBDIRS.txt"
 	# loop through each of the branch version subdirectories
 	while IFS= read tempSubdir
 	do
@@ -81,9 +81,9 @@ do
 		dos2unix "$projectName.html" &> /dev/null
 		# add to the archive lists from the subdir listing links
 		sed -n 's/.*href="\([^"]*\).*/\1/p' "$projectName.html" \
-			| sed 's|^'"$branchesURL"'[/]*||;s|^'"$branchesURLWithoutDomain"'[/]*||;s|[/]\+$||' \
-			| grep -E "^$projectName-[0-9]+[.][0-9]+[.][.0-9a-zA-Z~-]+[.]tar[.]gz$" \
-			| sed 's|^\('"$projectName"'-\)\([0-9]\+[.][0-9]\+[.][.0-9a-zA-Z~-]\+\)\([.]tar[.]gz\)$|'"$projectName"',\2,'"$branchesURL"'/'"$tempSubdir"'/\1\2\3|g' >> "ARCHIVES.txt"
+			| sed 's|^'"$branchesURL"/"$tempSubdir"'[/]*||;s|^'"$branchesURLWithoutDomain"/"$tempSubdir"'[/]*||;s|[/]\+$||' \
+			| grep -E "^$projectName-[0-9]+[.][0-9]+[.][.0-9a-zA-Z~-]+[.]tar[.]gz(|/download)$" \
+			| sed 's|/download$||;s|^\('"$projectName"'-\)\([0-9]\+[.][0-9]\+[.][.0-9a-zA-Z~-]\+\)\([.]tar[.]gz\)$|'"$projectName"',\2,'"$branchesURL"'/'"$tempSubdir"'/\1\2\3|g' >> "ARCHIVES.txt"
 	done < "$projectName.SUBDIRS.txt"
 
 	#remove files not using anymore
