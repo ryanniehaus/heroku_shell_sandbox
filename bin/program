@@ -146,10 +146,11 @@ then
 			else
 				# merge master to branch
 				echo BRANCH "$currentBranchName" EXISTS
-				git checkout "$currentBranchName"
-				git merge --commit master -m "merging latest master to branch "$currentBranchName" using heroku-automated-project-analysis"
-				git push
-				git checkout master
+				echo NOT PROCESSING BRANCH "$currentBranchName"
+#				git checkout "$currentBranchName"
+#				git merge --commit master -m "merging latest master to branch "$currentBranchName" using heroku-automated-project-analysis"
+#				git push
+#				git checkout master
 			fi
 			popd > /dev/null
 		fi
