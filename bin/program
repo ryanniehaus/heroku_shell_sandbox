@@ -128,17 +128,17 @@ then
 			echo "$archiveLine" > ospb/archives_to_process
 			
 			pushd ospb > /dev/null
-			git add -v archives_to_process
-			git add -v archives_successfully_processed
-			git add -v archives_blacklisted
-			git commit -m "heroku-automated-project-analysis (adding $projectName v$projectVersion)"
-			git push
 			
 			currentBranchName=RELEASE_"$projectName"v"$projectVersion"
 			branchExists=$(git branch -r --list | sed 's|^[ \t]\+||;s|[ \t]\+$||' | grep origin/"$currentBranchName")
 			
 			if [ "$branchExists" == "" ]
 			then
+				git add -v archives_to_process
+				git add -v archives_successfully_processed
+				git add -v archives_blacklisted
+				git commit -m "heroku-automated-project-analysis (adding $projectName v$projectVersion)"
+				git push
 				# create branch
 				echo BRANCH "$currentBranchName" IS BEING CREATED
 				#git branch -v "$currentBranchName"
