@@ -143,6 +143,12 @@ then
 				echo BRANCH "$currentBranchName" IS BEING CREATED
 				#git branch -v "$currentBranchName"
 				git push origin HEAD:refs/heads/"$currentBranchName"
+				git checkout "$currentBranchName"
+				#[![Build Status](https://travis-ci.org/ryanniehaus/open_source_package_builder.svg?branch=master)](https://travis-ci.org/ryanniehaus/open_source_package_builder)
+				#[![Build Status](https://travis-ci.org/ryanniehaus/open_source_package_builder.svg?branch=RELEASE_libcsvv3.0.0)](https://travis-ci.org/ryanniehaus/open_source_package_builder)
+				sed -i 's|branch=master)|branch='"$currentBranchName"')|' README.md
+				git add README.md
+				git commit -m "updated README to point to proper travis-ci info"
 			else
 				# merge master to branch
 				echo BRANCH "$currentBranchName" EXISTS
