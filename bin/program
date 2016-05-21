@@ -49,6 +49,8 @@ dos2unix openSourceTracker.csv &> /dev/null
 # grab only the contents of the tracker table, not the header
 tail -n+2 openSourceTracker.csv > openSourceTrackerWithoutHeader.csv
 # read each line of the tracker table contents
+
+echo "SEARCHING FOR ARCHIVE RELEASES..."
 > "ARCHIVES.txt"
 while IFS= read tempLine
 do
@@ -90,6 +92,8 @@ do
 	rm -f "$projectName.html"
 done < openSourceTrackerWithoutHeader.csv
 rm -f openSourceTrackerWithoutHeader.csv
+echo "ARCHIVE SEARCH COMPLETE"
+echo "PROCESSING ARCHIVES..."
 
 sort -t"," -k1,1d -k2,2V -u "ARCHIVES.txt" | grep -vE "^$" > "newARCHIVES.txt"
 mv -v "newARCHIVES.txt" "ARCHIVES.txt"
@@ -144,8 +148,6 @@ then
 				#git branch -v "$currentBranchName"
 				git push origin HEAD:refs/heads/"$currentBranchName"
 				git checkout "$currentBranchName"
-				#[![Build Status](https://travis-ci.org/ryanniehaus/open_source_package_builder.svg?branch=master)](https://travis-ci.org/ryanniehaus/open_source_package_builder)
-				#[![Build Status](https://travis-ci.org/ryanniehaus/open_source_package_builder.svg?branch=RELEASE_libcsvv3.0.0)](https://travis-ci.org/ryanniehaus/open_source_package_builder)
 				sed -i 's|branch=master)|branch='"$currentBranchName"')|' README.md
 				git add README.md
 				git commit -m "updated README to point to proper travis-ci info"
@@ -169,6 +171,8 @@ then
 		fi
 	done < "ARCHIVES.txt"
 fi
+
+echo "ARCHIVE PROCESSING COMPLETE"
 
 # convert the tracker table back to dos line endings
 unix2dos openSourceTracker.csv &> /dev/null
