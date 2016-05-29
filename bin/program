@@ -150,7 +150,7 @@ then
 				git checkout "$currentBranchName"
 				sed -i 's|branch=master)|branch='"$currentBranchName"')|' README.md
 				git add README.md
-				git commit -m "updated README to point to proper travis-ci info"
+				git commit -m "[ci skip] updated README to point to proper travis-ci info"
 				git push
 			else
 				# merge master to branch
