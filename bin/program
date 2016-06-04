@@ -171,8 +171,8 @@ then
 				then
 					git commit -m "merged latest changes from master"
 					git push
-					git checkout master
 				fi
+				git checkout master
 			fi
 			popd > /dev/null
 		fi
