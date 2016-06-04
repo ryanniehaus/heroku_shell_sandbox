@@ -172,8 +172,8 @@ then
 					git commit -m "merged latest changes from master"
 					git push
 				fi
-				git checkout master
 			fi
+			git checkout master
 			popd > /dev/null
 		fi
 	done < "ARCHIVES.txt"
